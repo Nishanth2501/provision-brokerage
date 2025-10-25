@@ -240,10 +240,37 @@ class IntelligentChatbot:
         try:
             message_lower = message.lower()
 
-            # Determine intent and generate appropriate response
-            intent = self._analyze_intent(message_lower)
-            response_text = self._generate_response(intent, message_lower)
-            suggestions = self._generate_suggestions(intent)
+            # First check if the message is relevant to ProVision services
+            if not self._is_relevant_to_provision(message_lower):
+                return {
+                    "message": "Information not found. I can only help with ProVision Brokerage services, retirement planning, annuities, and financial advisory topics. Please ask about our services or retirement planning.",
+                    "current_step": "not_found",
+                    "qualification_progress": 0,
+                    "qualification_score": None,
+                    "suggested_actions": ["Tell me about ProVision's services", "What are annuities?", "How can ProVision help me?"],
+                    "requires_human": False,
+                    "knowledge_sources": [],
+                    "context": {"current_state": "not_found", "session_id": session_id},
+                }
+
+            # Search for relevant information in knowledge base
+            relevant_info = self._search_knowledge_base(message_lower)
+            
+            if not relevant_info:
+                return {
+                    "message": "Information not found. I don't have specific information about that topic in my knowledge base. Please ask about ProVision's retirement planning services, annuities, or financial advisory topics.",
+                    "current_step": "not_found",
+                    "qualification_progress": 0,
+                    "qualification_score": None,
+                    "suggested_actions": ["Tell me about ProVision's services", "What are annuities?", "How can ProVision help me?"],
+                    "requires_human": False,
+                    "knowledge_sources": [],
+                    "context": {"current_state": "not_found", "session_id": session_id},
+                }
+
+            # Generate response based on found information
+            response_text = self._generate_informed_response(message_lower, relevant_info)
+            suggestions = self._generate_contextual_suggestions(relevant_info)
 
             return {
                 "message": response_text,
@@ -252,7 +279,7 @@ class IntelligentChatbot:
                 "qualification_score": None,
                 "suggested_actions": suggestions,
                 "requires_human": False,
-                "knowledge_sources": ["ProVision Brokerage Knowledge Base"],
+                "knowledge_sources": relevant_info.get("sources", ["ProVision Brokerage Knowledge Base"]),
                 "context": {"current_state": "chat", "session_id": session_id},
             }
 
@@ -461,21 +488,64 @@ class IntelligentChatbot:
 
         # Check for irrelevant topics that should return "not found"
         irrelevant_topics = [
-            "weather", "sports", "politics", "cooking", "travel", "movies", "music", 
-            "gaming", "technology", "programming", "coding", "software", "hardware",
-            "cars", "fashion", "food", "restaurants", "shopping", "entertainment",
-            "news", "current events", "history", "science", "medicine", "health",
-            "fitness", "exercise", "diet", "relationships", "dating", "family",
-            "education", "school", "university", "college", "jobs", "career",
-            "business", "marketing", "sales", "real estate", "insurance", "loans",
-            "credit", "debt", "mortgage", "banking", "cryptocurrency", "bitcoin",
-            "stocks", "trading", "investing", "forex", "crypto", "blockchain"
+            "weather",
+            "sports",
+            "politics",
+            "cooking",
+            "travel",
+            "movies",
+            "music",
+            "gaming",
+            "technology",
+            "programming",
+            "coding",
+            "software",
+            "hardware",
+            "cars",
+            "fashion",
+            "food",
+            "restaurants",
+            "shopping",
+            "entertainment",
+            "news",
+            "current events",
+            "history",
+            "science",
+            "medicine",
+            "health",
+            "fitness",
+            "exercise",
+            "diet",
+            "relationships",
+            "dating",
+            "family",
+            "education",
+            "school",
+            "university",
+            "college",
+            "jobs",
+            "career",
+            "business",
+            "marketing",
+            "sales",
+            "real estate",
+            "insurance",
+            "loans",
+            "credit",
+            "debt",
+            "mortgage",
+            "banking",
+            "cryptocurrency",
+            "bitcoin",
+            "stocks",
+            "trading",
+            "investing",
+            "forex",
+            "crypto",
+            "blockchain",
         ]
-        
-        if any(
-            word in message_lower
-            for word in irrelevant_topics
-        ):
+
+        if any(word in message_lower for word in irrelevant_topics):
             return "not_found"
 
         # Default - only for ProVision-related topics that don't match specific intents
@@ -879,6 +949,149 @@ class IntelligentChatbot:
         }
 
         return suggestions_map.get(intent, ["Learn more", "Ask questions", "Get help"])
+
+    def _is_relevant_to_provision(self, message: str) -> bool:
+        """Check if the message is relevant to ProVision services"""
+        provision_keywords = [
+            "provision", "brokerage", "retirement", "annuity", "annuities", "financial", 
+            "planning", "advisor", "advisory", "investment", "pension", "401k", "ira",
+            "social security", "income", "savings", "wealth", "portfolio", "consultation",
+            "seminar", "appointment", "booking", "schedule", "meeting", "advice",
+            "guidance", "help", "service", "services", "company", "business"
+        ]
+        
+        # Check for irrelevant topics first
+        irrelevant_topics = [
+            "weather", "sports", "politics", "cooking", "travel", "movies", "music", 
+            "gaming", "technology", "programming", "coding", "software", "hardware",
+            "cars", "fashion", "food", "restaurants", "shopping", "entertainment",
+            "news", "current events", "history", "science", "medicine", "health",
+            "fitness", "exercise", "diet", "relationships", "dating", "family",
+            "education", "school", "university", "college", "jobs", "career",
+            "business", "marketing", "sales", "real estate", "insurance", "loans",
+            "credit", "debt", "mortgage", "banking", "cryptocurrency", "bitcoin",
+            "stocks", "trading", "investing", "forex", "crypto", "blockchain"
+        ]
+        
+        if any(word in message for word in irrelevant_topics):
+            return False
+            
+        # Check for ProVision-related keywords
+        return any(word in message for word in provision_keywords)
+
+    def _search_knowledge_base(self, message: str) -> Dict[str, Any]:
+        """Search the knowledge base for relevant information"""
+        # Define searchable knowledge chunks with specific information
+        knowledge_chunks = [
+            {
+                "keywords": ["provision", "brokerage", "company", "about", "what", "do"],
+                "content": "ProVision Brokerage is an AI-powered financial advisory services company focused on retirement planning. We specialize in lead qualification, appointment booking, seminar management, and multi-channel client support through SMS, WhatsApp, and web platforms.",
+                "sources": ["Company Overview", "ProVision Brokerage Website"],
+                "category": "company_info"
+            },
+            {
+                "keywords": ["annuity", "annuities", "what are", "types", "fixed", "variable"],
+                "content": "Annuities are financial products that provide guaranteed income for life or a specified period. Fixed annuities offer guaranteed interest rates with principal protection, ideal for conservative investors. Variable annuities allow investment in sub-accounts with market-based returns, suitable for investors comfortable with some risk.",
+                "sources": ["Annuity Product Guide", "Financial Education Materials"],
+                "category": "products"
+            },
+            {
+                "keywords": ["retirement", "planning", "age", "20s", "30s", "40s", "50s", "60s", "70s"],
+                "content": "Retirement planning varies by age: 20s-30s focus on building wealth foundation and early savings; 40s-50s emphasize accelerating savings and mid-career wealth building; 60s+ concentrate on transitioning to retirement and protecting accumulated wealth. ProVision offers age-specific strategies and products.",
+                "sources": ["Retirement Planning Guide", "Age-Based Strategies"],
+                "category": "planning"
+            },
+            {
+                "keywords": ["services", "what can", "help", "offer", "provide"],
+                "content": "ProVision offers comprehensive services including lead qualification and management, appointment booking and scheduling, seminar management and registration, multi-channel client support (SMS, WhatsApp, Web), retirement planning consultation, annuity education and guidance, and financial advisory services.",
+                "sources": ["Service Catalog", "ProVision Services Overview"],
+                "category": "services"
+            },
+            {
+                "keywords": ["consultation", "appointment", "schedule", "book", "meeting"],
+                "content": "ProVision offers free retirement readiness assessments and personalized planning consultations. Our licensed retirement planning specialists provide expert guidance on fixed, variable, and indexed annuities for guaranteed income. Easy scheduling with our specialists is available through multiple channels.",
+                "sources": ["Consultation Services", "Appointment Booking System"],
+                "category": "consultation"
+            },
+            {
+                "keywords": ["seminar", "seminars", "workshop", "event", "class", "learn"],
+                "content": "ProVision hosts educational seminars on retirement planning strategies, understanding annuities, tax-efficient retirement planning, income protection strategies, and legacy planning. These sessions provide educational content, expert guidance, Q&A opportunities in a no-pressure environment.",
+                "sources": ["Seminar Schedule", "Educational Events"],
+                "category": "education"
+            },
+            {
+                "keywords": ["tax", "taxes", "benefits", "advantage", "deduction"],
+                "content": "Annuities offer tax-deferred growth, meaning you don't pay taxes on earnings until you withdraw money. This allows your money to grow faster than in taxable accounts. Withdrawals before age 59½ may be subject to a 10% penalty plus ordinary income tax.",
+                "sources": ["Tax Guide", "Annuity Tax Benefits"],
+                "category": "tax"
+            },
+            {
+                "keywords": ["income", "guaranteed", "protection", "steady", "lifetime"],
+                "content": "ProVision specializes in creating guaranteed income strategies through annuities. These products provide protection against outliving your savings and create steady income streams during retirement. We help diversify income sources including Social Security, pensions, annuities, and investments.",
+                "sources": ["Income Protection Strategies", "Guaranteed Income Guide"],
+                "category": "income"
+            }
+        ]
+        
+        # Simple keyword matching to find relevant chunks
+        best_match = None
+        best_score = 0
+        
+        for chunk in knowledge_chunks:
+            score = sum(1 for keyword in chunk["keywords"] if keyword in message)
+            if score > best_score:
+                best_score = score
+                best_match = chunk
+        
+        return best_match if best_score > 0 else None
+
+    def _generate_informed_response(self, message: str, relevant_info: Dict[str, Any]) -> str:
+        """Generate response based on found knowledge"""
+        if not relevant_info:
+            return "Information not found. Please ask about ProVision's services or retirement planning."
+        
+        content = relevant_info["content"]
+        category = relevant_info["category"]
+        
+        # Add contextual information based on the category
+        if category == "company_info":
+            return f"Based on our company information: {content}"
+        elif category == "products":
+            return f"Here's what I found about our products: {content}"
+        elif category == "planning":
+            return f"According to our retirement planning expertise: {content}"
+        elif category == "services":
+            return f"Our services include: {content}"
+        elif category == "consultation":
+            return f"Regarding consultations: {content}"
+        elif category == "education":
+            return f"About our educational offerings: {content}"
+        elif category == "tax":
+            return f"Tax information: {content}"
+        elif category == "income":
+            return f"Regarding income strategies: {content}"
+        else:
+            return content
+
+    def _generate_contextual_suggestions(self, relevant_info: Dict[str, Any]) -> List[str]:
+        """Generate suggestions based on the found information"""
+        if not relevant_info:
+            return ["Tell me about ProVision's services", "What are annuities?", "How can ProVision help me?"]
+        
+        category = relevant_info["category"]
+        
+        suggestion_map = {
+            "company_info": ["What services do you offer?", "Tell me about annuities", "How do I schedule a consultation?"],
+            "products": ["What are the tax benefits?", "How do I choose the right annuity?", "Schedule a consultation"],
+            "planning": ["What are annuities?", "Tell me about seminars", "Schedule a consultation"],
+            "services": ["What are annuities?", "Tell me about seminars", "How do I get started?"],
+            "consultation": ["Book an appointment", "Learn about annuities", "Ask about seminars"],
+            "education": ["Register for a seminar", "What are annuities?", "Schedule a consultation"],
+            "tax": ["What are annuities?", "Tell me about retirement planning", "Schedule a consultation"],
+            "income": ["What are annuities?", "Tell me about retirement planning", "Schedule a consultation"]
+        }
+        
+        return suggestion_map.get(category, ["Tell me about ProVision's services", "What are annuities?", "How can ProVision help me?"])
 
     def get_qualification_questions(self) -> List[str]:
         """Get list of qualification questions"""
