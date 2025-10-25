@@ -19,10 +19,5 @@
       "src": "/(.*)",
       "dest": "/frontend/index.html"
     }
-  ],
-  "functions": {
-    "backend/main_ui_server.py": {
-      "runtime": "python3.9"
-    }
-  }
+  ]
 }
