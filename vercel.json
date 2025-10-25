@@ -1,7 +1,7 @@
 {
   "functions": {
     "backend/main_ui_server.py": {
-      "runtime": "python3.9"
+      "runtime": "@vercel/python@3.9"
     }
   },
   "routes": [
