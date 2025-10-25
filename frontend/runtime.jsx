@@ -245,7 +245,7 @@ function DeviceMock() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8001/api/chat', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -972,7 +972,7 @@ function ChatbotPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8001/api/chat', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
