@@ -228,10 +228,10 @@ class IntelligentChatbot:
                 "A consultation with our advisors would be perfect for getting personalized retirement planning advice tailored to your needs and goals.",
                 "Our retirement specialists offer free consultations to help you understand your options and develop a customized plan.",
             ],
-            "default": [
-                "That's a great question about retirement planning! I'd recommend speaking with one of our specialists who can provide detailed information about your specific situation.",
-                "I understand you're interested in learning more about financial planning. Our advisors have extensive experience and can give you personalized guidance.",
-                "That's an important topic for your financial future. I'd suggest scheduling a consultation with one of our specialists for detailed, personalized advice.",
+            "not_found": [
+                "Information not found. I can only help with ProVision Brokerage services, retirement planning, annuities, and financial advisory topics. Please ask about our services or retirement planning.",
+                "Information not found. I specialize in ProVision Brokerage services including retirement planning, annuities, and financial advisory. How can I help you with these topics?",
+                "Information not found. I can assist with ProVision's retirement planning services, annuity information, and financial guidance. What would you like to know about our services?",
             ],
         }
 
@@ -459,8 +459,27 @@ class IntelligentChatbot:
         ):
             return "annuities_general"  # Redirect to annuities for tax questions
 
-        # Default
-        return "default"
+        # Check for irrelevant topics that should return "not found"
+        irrelevant_topics = [
+            "weather", "sports", "politics", "cooking", "travel", "movies", "music", 
+            "gaming", "technology", "programming", "coding", "software", "hardware",
+            "cars", "fashion", "food", "restaurants", "shopping", "entertainment",
+            "news", "current events", "history", "science", "medicine", "health",
+            "fitness", "exercise", "diet", "relationships", "dating", "family",
+            "education", "school", "university", "college", "jobs", "career",
+            "business", "marketing", "sales", "real estate", "insurance", "loans",
+            "credit", "debt", "mortgage", "banking", "cryptocurrency", "bitcoin",
+            "stocks", "trading", "investing", "forex", "crypto", "blockchain"
+        ]
+        
+        if any(
+            word in message_lower
+            for word in irrelevant_topics
+        ):
+            return "not_found"
+
+        # Default - only for ProVision-related topics that don't match specific intents
+        return "not_found"
 
     def _generate_response(self, intent: str, message: str) -> str:
         """Generate response based on intent"""
@@ -777,8 +796,11 @@ class IntelligentChatbot:
         elif intent == "consultation":
             return random.choice(self.response_templates["consultation"])
 
+        elif intent == "not_found":
+            return random.choice(self.response_templates["not_found"])
+
         else:
-            return random.choice(self.response_templates["default"])
+            return random.choice(self.response_templates["not_found"])
 
     def _generate_suggestions(self, intent: str) -> List[str]:
         """Generate relevant follow-up suggestions based on intent"""
@@ -843,6 +865,11 @@ class IntelligentChatbot:
                 "Book an appointment",
                 "Learn about annuities",
                 "Ask about seminars",
+            ],
+            "not_found": [
+                "Tell me about ProVision's services",
+                "What are annuities?",
+                "How can ProVision help me?",
             ],
             "default": [
                 "Tell me about ProVision's services",
