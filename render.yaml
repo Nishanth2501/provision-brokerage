@@ -1,11 +1,6 @@
 services:
   - type: web
     name: provision-brokerage-demo
-    env: python
-    pythonVersion: "3.11"
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && python main_ui_server.py
-    envVars:
-      - key: OPENAI_API_KEY
-        sync: false
-    staticPublishPath: frontend
+    env: static
+    buildCommand: echo "No build needed for static site"
+    staticPublishPath: .
