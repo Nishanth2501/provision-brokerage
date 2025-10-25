@@ -6,8 +6,11 @@ Simple chatbot for the main UI tab
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import uvicorn
 import logging
+import os
 from intelligent_chatbot import IntelligentChatbot
 
 # Configure logging
@@ -38,19 +41,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+if os.path.exists(frontend_path):
+    app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
 # Initialize chatbot
 chatbot = IntelligentChatbot()
 
 
 @app.get("/")
 async def root():
-    """Root endpoint"""
-    return {
-        "message": "ProVision Brokerage Main UI API",
-        "version": "1.0.0",
-        "status": "running",
-        "chatbot": "ready",
-    }
+    """Serve the frontend application"""
+    frontend_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "index.html")
+    if os.path.exists(frontend_file):
+        return FileResponse(frontend_file)
+    else:
+        # Fallback to root index.html if frontend/index.html doesn't exist
+        root_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "index.html")
+        if os.path.exists(root_file):
+            return FileResponse(root_file)
+        else:
+            return {
+                "message": "ProVision Brokerage Main UI API",
+                "version": "1.0.0",
+                "status": "running",
+                "chatbot": "ready",
+            }
 
 
 @app.get("/health")
