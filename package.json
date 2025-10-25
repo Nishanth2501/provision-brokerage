@@ -1,0 +1,16 @@
+{
+  "name": "provision-brokerage-demo",
+  "version": "1.0.0",
+  "description": "ProVision Brokerage AI Chatbot Demo",
+  "main": "frontend/index.html",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "build": "echo 'No build step required for static files'",
+    "start": "python -m http.server 3000"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
