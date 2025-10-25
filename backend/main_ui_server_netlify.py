@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler
 # Try to import and initialize the chatbot
 try:
     from intelligent_chatbot import IntelligentChatbot
+
     chatbot = IntelligentChatbot()
     chatbot_available = True
 except Exception as e:
@@ -48,8 +49,8 @@ class handler(BaseHTTPRequestHandler):
                             "Tell me about retirement planning",
                             "What are annuities?",
                             "Help me with appointments",
-                            "What services do you offer?"
-                        ]
+                            "What services do you offer?",
+                        ],
                     }
                 else:
                     # Get response from chatbot
@@ -67,7 +68,7 @@ class handler(BaseHTTPRequestHandler):
             except Exception as e:
                 print(f"Error in POST handler: {e}")
                 print(f"Traceback: {traceback.format_exc()}")
-                
+
                 self.send_response(500)
                 self.send_header("Content-type", "application/json")
                 self.send_header("Access-Control-Allow-Origin", "*")
@@ -79,7 +80,7 @@ class handler(BaseHTTPRequestHandler):
                         "Tell me about retirement planning",
                         "What are annuities?",
                         "Help me with appointments",
-                        "What services do you offer?"
+                        "What services do you offer?",
                     ],
                 }
                 self.wfile.write(json.dumps(error_response).encode())
