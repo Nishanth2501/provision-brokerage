@@ -4,7 +4,6 @@ services:
     env: python
     buildCommand: pip install -r backend/requirements.txt
     startCommand: cd backend && python start.py
-    staticPublishPath: frontend
     envVars:
       - key: OPENAI_API_KEY
         sync: false

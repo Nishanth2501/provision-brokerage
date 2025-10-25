@@ -41,33 +41,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static files
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
-if os.path.exists(frontend_path):
-    app.mount("/static", StaticFiles(directory=frontend_path), name="static")
-
 # Initialize chatbot
 chatbot = IntelligentChatbot()
-
-
-@app.get("/")
-async def root():
-    """Serve the frontend application"""
-    frontend_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "index.html")
-    if os.path.exists(frontend_file):
-        return FileResponse(frontend_file)
-    else:
-        # Fallback to root index.html if frontend/index.html doesn't exist
-        root_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "index.html")
-        if os.path.exists(root_file):
-            return FileResponse(root_file)
-        else:
-            return {
-                "message": "ProVision Brokerage Main UI API",
-                "version": "1.0.0",
-                "status": "running",
-                "chatbot": "ready",
-            }
 
 
 @app.get("/health")
@@ -125,6 +100,12 @@ async def get_qualification_questions():
     except Exception as e:
         logger.error(f"Error getting qualification questions: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Mount static files - this must be after all API routes
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend_static")
 
 
 if __name__ == "__main__":
