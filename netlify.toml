@@ -6,13 +6,8 @@
   NODE_VERSION = "18"
 
 [[redirects]]
-  from = "/api/test"
-  to = "/.netlify/functions/test_function.py"
-  status = 200
-
-[[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/main_ui_server_netlify.py"
+  to = "/.netlify/functions/api"
   status = 200
 
 [[redirects]]
@@ -21,4 +16,4 @@
   status = 200
 
 [functions]
-  directory = "backend"
+  directory = "netlify/functions"

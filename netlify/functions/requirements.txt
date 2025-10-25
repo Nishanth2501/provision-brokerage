@@ -1,0 +1,6 @@
+# Netlify Functions Requirements
+fastapi
+uvicorn
+pydantic
+openai
+python-dotenv
