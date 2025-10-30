@@ -35,6 +35,23 @@ logs/
 *.tmp
 *.temp
 
+# Test output files
+backend/test_output.txt
+backend/test_results.txt
+backend/final_test.txt
+backend/test_final.txt
+**/test_output*.txt
+**/test_results*.txt
+
+# Database files (local development only)
+backend/*.db
+backend/*.db-*
+*.sqlite
+*.sqlite3
+
+# Archive directory
+.archive/
+
 # API keys and secrets
 *.key
 *.pem

@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: provision-brokerage-demo
-    env: python
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && python start.py
-    envVars:
-      - key: OPENAI_API_KEY
-        sync: false

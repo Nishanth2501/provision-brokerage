@@ -2,7 +2,7 @@
 
 A professional AI-powered chatbot demo for ProVision Brokerage, showcasing multi-channel engagement and lead qualification capabilities.
 
-## 🚀 Features
+##  Features
 
 - **AI-Powered Chatbot**: Intelligent responses based on ProVision's knowledge base
 - **Multi-Channel UI**: Website, SMS, WhatsApp, and Facebook integration previews
@@ -10,22 +10,22 @@ A professional AI-powered chatbot demo for ProVision Brokerage, showcasing multi
 - **Coming Soon Pages**: Professional previews of upcoming features
 - **Responsive Design**: Works on desktop and mobile devices
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
-├── frontend/
-│   ├── index.html          # Main HTML file
-│   └── runtime.jsx         # React components & UI
-├── backend/
-│   ├── main_ui_server.py   # FastAPI server
-│   ├── intelligent_chatbot.py  # AI chatbot logic
-│   └── requirements.txt    # Python dependencies
-├── vercel.json            # Vercel configuration
-├── package.json          # Node.js configuration
-└── README.md             # This file
+ frontend/
+    index.html          # Main HTML file
+    runtime.jsx         # React components & UI
+ backend/
+    main_ui_server.py   # FastAPI server
+    intelligent_chatbot.py  # AI chatbot logic
+    requirements.txt    # Python dependencies
+ vercel.json            # Vercel configuration
+ package.json          # Node.js configuration
+ README.md             # This file
 ```
 
-## 🛠️ Local Development
+##  Local Development
 
 ### Prerequisites
 - Python 3.9+
@@ -44,7 +44,7 @@ python main_ui_server.py
 python -m http.server 3000
 ```
 
-## 🌐 Deployment
+##  Deployment
 
 ### Vercel Deployment
 1. Connect your GitHub repository to Vercel
@@ -60,7 +60,7 @@ npm i -g vercel
 vercel --prod
 ```
 
-## 🔧 Configuration
+##  Configuration
 
 ### Environment Variables
 Set these in your Vercel dashboard:
@@ -70,7 +70,7 @@ Set these in your Vercel dashboard:
 - `POST /api/chat`: Chat with the AI bot
 - `GET /api/health`: Health check endpoint
 
-## 📱 Demo Features
+##  Demo Features
 
 ### Navigation Tabs
 - **Seminars**: Seminar management system preview
@@ -85,14 +85,14 @@ Set these in your Vercel dashboard:
 - Sales-focused conversation flow
 - Multi-channel simulation
 
-## 🎯 Demo Use Cases
+##  Demo Use Cases
 
 1. **Lead Qualification**: Ask about retirement planning
 2. **Age-Specific Advice**: Test responses for different age groups
 3. **Feature Previews**: Navigate through "Coming Soon" pages
 4. **Multi-Channel**: Experience different communication channels
 
-## 📞 Support
+##  Support
 
 For technical support or questions about the demo, please contact the development team.
 
