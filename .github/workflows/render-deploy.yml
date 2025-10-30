@@ -1,0 +1,47 @@
+# Optional: GitHub Actions workflow for automated deployment testing
+# This workflow runs checks before deploying to Render
+
+name: Render Deployment Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+    
+    - name: Check Python syntax
+      run: |
+        cd backend
+        python -m py_compile main.py
+        python -m py_compile verify_env.py
+    
+    - name: Verify required files
+      run: |
+        test -f render.yaml && echo "✓ render.yaml found"
+        test -f backend/Procfile && echo "✓ Procfile found"
+        test -f backend/requirements.txt && echo "✓ requirements.txt found"
+        test -f frontend/index.html && echo "✓ frontend/index.html found"
+        test -f frontend/config.js && echo "✓ frontend/config.js found"
+    
+    - name: Summary
+      run: |
+        echo "✅ All deployment checks passed!"
+        echo "📦 Ready for Render deployment"
+
