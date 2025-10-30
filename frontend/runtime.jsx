@@ -246,7 +246,7 @@ function DeviceMock({ pageContext = "home", initialMessage = "Hi. I'm Sarah from
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/chat', {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1493,7 +1493,7 @@ function ChatbotPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/chat', {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1817,7 +1817,7 @@ function SeminarsPage() {
 
   // Fetch seminars from backend
   React.useEffect(() => {
-    fetch('http://localhost:8000/api/seminars/upcoming')
+    fetch(`${API_BASE_URL}/api/seminars/upcoming`)
       .then(res => res.json())
       .then(data => {
         setSeminars(data.seminars || []);
@@ -1857,7 +1857,7 @@ function SeminarsPage() {
     e.preventDefault();
     
     try {
-      const response = await fetch('http://localhost:8000/api/seminars/register', {
+      const response = await fetch(`${API_BASE_URL}/api/seminars/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1874,7 +1874,7 @@ function SeminarsPage() {
       if (response.ok) {
         setRegistrationSuccess(true);
         // Refresh seminars list to update registration count
-        const updatedSeminars = await fetch('http://localhost:8000/api/seminars/upcoming').then(r => r.json());
+        const updatedSeminars = await fetch(`${API_BASE_URL}/api/seminars/upcoming`).then(r => r.json());
         setSeminars(updatedSeminars.seminars || []);
         
         // Close form after 2 seconds
