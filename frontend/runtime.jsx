@@ -1,5 +1,14 @@
 const { useState } = React;
 
+// Get API_BASE_URL from global scope (defined in config.js)
+const API_BASE_URL = window.API_BASE_URL || (window.location.hostname === 'localhost' 
+  ? 'http://localhost:8000'
+  : 'https://provision-brokerage-30.onrender.com');
+
+console.log('🔧 Runtime.jsx loaded');
+console.log('🌐 API_BASE_URL:', API_BASE_URL);
+console.log('🖥️ Hostname:', window.location.hostname);
+
 const GOLD = "#FFC72C";
 const NAVY = "#142857";
 const SLATE = "#1C2540";
@@ -246,6 +255,16 @@ function DeviceMock({ pageContext = "home", initialMessage = "Hi. I'm Sarah from
     setIsLoading(true);
 
     try {
+      console.log('📤 Sending message to:', `${API_BASE_URL}/api/chat`);
+      console.log('📦 Payload:', {
+        message: inputMessage,
+        session_id: sessionId,
+        channel: channelMode || "web",
+        context: {
+          page: pageContext || "home"
+        }
+      });
+
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: {
@@ -261,11 +280,16 @@ function DeviceMock({ pageContext = "home", initialMessage = "Hi. I'm Sarah from
         })
       });
 
+      console.log('📥 Response status:', response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorText = await response.text();
+        console.error('❌ API Error:', errorText);
+        throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log('✅ Response data:', data);
       
       const agentMessage = {
         role: "agent",
@@ -275,7 +299,7 @@ function DeviceMock({ pageContext = "home", initialMessage = "Hi. I'm Sarah from
 
       setMessages(prev => [...prev, agentMessage]);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('❌ Error sending message:', error);
       const errorMessage = {
         role: "agent",
         sender: "AI Agent",
@@ -1493,6 +1517,8 @@ function ChatbotPage() {
     setIsLoading(true);
 
     try {
+      console.log('📤 [Home] Sending message to:', `${API_BASE_URL}/api/chat`);
+      
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: {
@@ -1508,11 +1534,16 @@ function ChatbotPage() {
         })
       });
 
+      console.log('📥 [Home] Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorText = await response.text();
+        console.error('❌ [Home] API Error:', errorText);
+        throw new Error(`Network response was not ok: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log('✅ [Home] Response data:', data);
       
       const agentMessage = {
         role: "agent",
@@ -1524,7 +1555,7 @@ function ChatbotPage() {
 
       setMessages(prev => [...prev, agentMessage]);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('❌ [Home] Error sending message:', error);
       const errorMessage = {
         role: "agent",
         sender: "AI Agent",
