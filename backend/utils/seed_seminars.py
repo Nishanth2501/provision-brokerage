@@ -148,7 +148,7 @@ def create_sample_seminars():
             time_str = schedule_item["time"]
             hour, minute = map(int, time_str.split(":"))
 
-            seminar_date = datetime.now() + timedelta(days=date_offset)
+            seminar_date = datetime.utcnow() + timedelta(days=date_offset)
             seminar_date = seminar_date.replace(
                 hour=hour, minute=minute, second=0, microsecond=0
             )
