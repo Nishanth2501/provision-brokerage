@@ -1,19 +1,26 @@
 const { useState } = React;
 
-// Get API_BASE_URL from global scope (defined in config.js)
-const API_BASE_URL = window.API_BASE_URL || (window.location.hostname === 'localhost' 
-  ? 'http://localhost:8000'
-  : 'https://provision-brokerage-30.onrender.com');
-
-console.log('🔧 Runtime.jsx loaded');
-console.log('🌐 API_BASE_URL:', API_BASE_URL);
-console.log('🖥️ Hostname:', window.location.hostname);
-
 const GOLD = "#FFC72C";
 const NAVY = "#142857";
 const SLATE = "#1C2540";
 const CLOUD = "#F5F7FB";
 const BORDER = "rgba(20, 40, 87, 0.12)";
+
+// Get API_BASE_URL - will be set by config.js or use fallback
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.API_BASE_URL) {
+    return window.API_BASE_URL;
+  }
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return 'http://localhost:8000';
+  }
+  return 'https://provision-brokerage-30.onrender.com';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+console.log('🔧 Runtime.jsx loaded');
+console.log('🌐 API_BASE_URL:', API_BASE_URL);
 
 const navLinks = ["Seminars", "Appointments", "Facebook", "Instagram", "Website Leads"];
 
