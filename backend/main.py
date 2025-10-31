@@ -11,7 +11,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from core.config import settings
-from core.database import get_db, init_db
+from core.database import get_db, init_db, SessionLocal
 from utils.chatbot import ProVisionChatbot
 from services.lead_service import LeadService
 from services.seminar_service import SeminarService
