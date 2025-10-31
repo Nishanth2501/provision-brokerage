@@ -403,7 +403,11 @@ REMEMBER: You're here to HELP people, not sell them. If someone genuinely isn't 
             return response.choices[0].message.content
 
         except Exception as e:
-            print(f"Error generating response: {e}")
+            print(f"❌ ERROR generating response: {type(e).__name__}: {str(e)}")
+            print(f"   Model: {self.model}")
+            print(f"   API Key set: {bool(settings.GROQ_API_KEY)}")
+            import traceback
+            traceback.print_exc()
             return self._fallback_response()
 
     def _build_context_message(self, context: dict) -> str:
