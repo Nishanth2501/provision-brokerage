@@ -137,6 +137,57 @@ async def health_check():
     }
 
 
+@app.get("/api/admin/check-database")
+async def check_database(db: Session = Depends(get_db)):
+    """
+    Admin endpoint to check database contents.
+    Returns counts of all data in the database.
+    """
+    try:
+        from models.seminar import Seminar
+        from models.lead import Lead
+        from models.conversation import Conversation
+        from models.appointment import Appointment
+        from models.seminar_registration import SeminarRegistration
+        
+        seminar_count = db.query(Seminar).count()
+        lead_count = db.query(Lead).count()
+        conversation_count = db.query(Conversation).count()
+        appointment_count = db.query(Appointment).count()
+        registration_count = db.query(SeminarRegistration).count()
+        
+        # Get seminar details
+        seminars = db.query(Seminar).order_by(Seminar.date).all()
+        seminar_list = [
+            {
+                "id": s.id,
+                "title": s.title,
+                "date": s.date.isoformat() if s.date else None,
+                "location_type": s.location_type,
+                "registered": s.registered_count,
+                "capacity": s.capacity,
+                "status": s.status
+            }
+            for s in seminars
+        ]
+        
+        return {
+            "status": "success",
+            "database_summary": {
+                "seminars": seminar_count,
+                "leads": lead_count,
+                "conversations": conversation_count,
+                "appointments": appointment_count,
+                "registrations": registration_count
+            },
+            "seminars_list": seminar_list,
+            "message": f"Found {seminar_count} seminars in database"
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error checking database: {str(e)}")
+
+
 @app.post("/api/admin/seed-seminars")
 async def seed_seminars(db: Session = Depends(get_db)):
     """
