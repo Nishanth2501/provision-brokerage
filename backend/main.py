@@ -137,6 +137,115 @@ async def health_check():
     }
 
 
+@app.post("/api/admin/seed-seminars")
+async def seed_seminars(db: Session = Depends(get_db)):
+    """
+    Admin endpoint to seed sample seminars.
+    Run this once to populate the database with sample seminar data.
+    """
+    try:
+        from utils.seed_seminars import create_sample_seminars
+        
+        # Clear and seed
+        from models.seminar import Seminar
+        db.query(Seminar).delete()
+        db.commit()
+        
+        # Import required modules
+        from datetime import timedelta
+        from knowledge.seminar_topics import SEMINAR_TOPICS
+        
+        seminar_schedule = [
+            {
+                "topic_key": "retirement_planning_strategies",
+                "date_offset": 5,
+                "time": "18:00",
+                "location_type": "virtual",
+                "location_details": "Zoom Meeting Link: https://zoom.us/j/123456789",
+                "capacity": 50,
+            },
+            {
+                "topic_key": "understanding_annuities",
+                "date_offset": 12,
+                "time": "19:00",
+                "location_type": "virtual",
+                "location_details": "Zoom Meeting Link: https://zoom.us/j/987654321",
+                "capacity": 40,
+            },
+            {
+                "topic_key": "social_security_maximization",
+                "date_offset": 18,
+                "time": "18:30",
+                "location_type": "hybrid",
+                "location_details": "In-person: 123 Main St | Zoom: https://zoom.us/j/555555555",
+                "capacity": 60,
+            },
+            {
+                "topic_key": "tax_efficient_retirement",
+                "date_offset": 25,
+                "time": "18:00",
+                "location_type": "virtual",
+                "location_details": "Zoom Meeting Link: https://zoom.us/j/111222333",
+                "capacity": 45,
+            },
+            {
+                "topic_key": "medicare_healthcare_costs",
+                "date_offset": 32,
+                "time": "19:00",
+                "location_type": "virtual",
+                "location_details": "Zoom Meeting Link: https://zoom.us/j/444555666",
+                "capacity": 50,
+            },
+        ]
+        
+        from models.seminar import Seminar
+        seminars_created = 0
+        
+        for schedule_item in seminar_schedule:
+            topic_key = schedule_item["topic_key"]
+            topic_data = SEMINAR_TOPICS.get(topic_key)
+            
+            if not topic_data:
+                continue
+            
+            # Calculate seminar date/time
+            date_offset = schedule_item["date_offset"]
+            time_str = schedule_item["time"]
+            hour, minute = map(int, time_str.split(":"))
+            
+            seminar_date = datetime.utcnow() + timedelta(days=date_offset)
+            seminar_date = seminar_date.replace(hour=hour, minute=minute, second=0, microsecond=0)
+            
+            # Create seminar
+            seminar = Seminar(
+                title=topic_data["title"],
+                description=topic_data["description"],
+                topic=topic_key.replace("_", " ").title(),
+                date=seminar_date,
+                duration=topic_data.get("duration", 60),
+                location_type=schedule_item["location_type"],
+                location_details=schedule_item["location_details"],
+                capacity=schedule_item["capacity"],
+                registered_count=schedule_item.get("registered_count", 0),
+                status="upcoming",
+            )
+            
+            db.add(seminar)
+            seminars_created += 1
+        
+        db.commit()
+        
+        return {
+            "success": True,
+            "message": f"Successfully created {seminars_created} sample seminars",
+            "count": seminars_created
+        }
+    
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error seeding seminars: {str(e)}")
+
+
 # ============================================================================
 # Chat Endpoints
 # ============================================================================
