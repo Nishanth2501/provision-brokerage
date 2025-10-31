@@ -123,18 +123,18 @@ function Header({ activePage, onNavigate }) {
                     event.preventDefault();
                     onNavigate(item);
                   }}
-            style={{
-              textDecoration: "none",
-              color: isActive ? "#ffffff" : "inherit",
-              background: isActive ? "#000000" : "transparent",
-              padding: "6px 14px",
-              borderRadius: 6,
-              letterSpacing: "0.08em",
-              fontSize: "0.82em",
-              textTransform: "uppercase",
-              fontWeight: 700,
-              transition: "background 0.2s ease, color 0.2s ease"
-            }}
+                  style={{
+                    textDecoration: "none",
+                    color: isActive ? "#ffffff" : "inherit",
+                    background: isActive ? "#000000" : "transparent",
+                    padding: "6px 14px",
+                    borderRadius: 6,
+                    letterSpacing: "0.08em",
+                    fontSize: "0.82em",
+                    textTransform: "uppercase",
+                    fontWeight: 700,
+                    transition: "background 0.2s ease, color 0.2s ease"
+                  }}
                 >
                   {item}
                 </a>
