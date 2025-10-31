@@ -47,6 +47,7 @@ class ChatRequest(BaseModel):
     channel: str = "web"
     user_email: Optional[EmailStr] = None
     user_name: Optional[str] = None
+    context: Optional[Dict[str, Any]] = None  # Add context field for page/feature info
 
 
 class ChatResponse(BaseModel):
@@ -336,6 +337,11 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
         # Create chatbot instance
         chatbot = ProVisionChatbot(db)
 
+        # Extract page context from request context if provided
+        page_context = None
+        if request.context and "page" in request.context:
+            page_context = request.context["page"]
+
         # Process message
         response = await chatbot.process_message(
             message=request.message,
@@ -343,6 +349,7 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
             channel=request.channel,
             user_email=request.user_email,
             user_name=request.user_name,
+            page_context=page_context,
         )
 
         return ChatResponse(**response)

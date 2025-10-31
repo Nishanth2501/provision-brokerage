@@ -254,9 +254,9 @@ function DeviceMock({ pageContext = "home", initialMessage = "Hi. I'm Sarah from
         body: JSON.stringify({
           message: inputMessage,
           session_id: sessionId,
+          channel: channelMode || "web",
           context: {
-            page: pageContext,
-            feature: pageContext
+            page: pageContext || "home"
           }
         })
       });
@@ -1501,7 +1501,10 @@ function ChatbotPage() {
         body: JSON.stringify({
           message: inputMessage,
           session_id: sessionId,
-          context: {}
+          channel: "web",
+          context: {
+            page: "home"
+          }
         })
       });
 

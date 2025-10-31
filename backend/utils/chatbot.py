@@ -54,6 +54,7 @@ class ProVisionChatbot:
         channel: str = "web",
         user_email: Optional[str] = None,
         user_name: Optional[str] = None,
+        page_context: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Process a user message and generate AI response.
@@ -66,6 +67,7 @@ class ProVisionChatbot:
             channel: Communication channel (web, sms, whatsapp, facebook)
             user_email: Optional user email
             user_name: Optional user name
+            page_context: Optional page context (seminars, appointments, facebook, etc.)
 
         Returns:
             Dictionary with response, qualification status, and next actions
@@ -89,6 +91,10 @@ class ProVisionChatbot:
 
         # Build context for AI
         context = self._build_context(conversation, user_email, user_name)
+        
+        # Add page context if provided
+        if page_context:
+            context["page"] = page_context
 
         # Check if we're in qualification flow
         current_progress = conversation.qualification_progress
