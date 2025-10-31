@@ -6,18 +6,11 @@ const SLATE = "#1C2540";
 const CLOUD = "#F5F7FB";
 const BORDER = "rgba(20, 40, 87, 0.12)";
 
-// Get API_BASE_URL - will be set by config.js or use fallback
-const getApiBaseUrl = () => {
-  if (typeof window !== 'undefined' && window.API_BASE_URL) {
-    return window.API_BASE_URL;
-  }
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return 'http://localhost:8000';
-  }
-  return 'https://provision-brokerage-30.onrender.com';
-};
-
-const API_BASE_URL = getApiBaseUrl();
+// API_BASE_URL is set by config.js which loads first
+// Fallback to production URL if not set
+const API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL) 
+  ? window.API_BASE_URL 
+  : 'https://provision-brokerage-30.onrender.com';
 
 console.log('🔧 Runtime.jsx loaded');
 console.log('🌐 API_BASE_URL:', API_BASE_URL);
