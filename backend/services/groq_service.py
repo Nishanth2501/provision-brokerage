@@ -428,6 +428,20 @@ REMEMBER: You're here to HELP people, not sell them. If someone genuinely isn't 
         if context.get("appointment_booked"):
             parts.append(" Appointment already booked")
 
+        # Add upcoming seminars information
+        if context.get("upcoming_seminars"):
+            seminars = context["upcoming_seminars"]
+            if seminars:
+                parts.append("\n UPCOMING SEMINARS (Real-time data):")
+                for i, seminar in enumerate(seminars, 1):
+                    status = " (FULL)" if seminar.get("is_full") else f" ({seminar.get('available_seats')} seats left)"
+                    parts.append(
+                        f"{i}. {seminar.get('title')} - {seminar.get('date')} "
+                        f"[{seminar.get('location_type').upper()}]{status}"
+                    )
+                parts.append("\nWhen user asks about seminars, share these specific dates and details!")
+                parts.append("If they want to register, tell them to click on the seminar card on the left side.")
+
         if parts:
             return "CONTEXT: " + "\n".join(parts)
         return ""

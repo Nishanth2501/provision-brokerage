@@ -226,6 +226,30 @@ class ProVisionChatbot:
                 context["lead_score"] = lead.lead_score
                 context["qualification_status"] = lead.qualification_status
 
+        # Add upcoming seminars info
+        try:
+            from services.seminar_service import SeminarService
+            seminar_service = SeminarService(self.db)
+            upcoming_seminars = seminar_service.list_upcoming_seminars(limit=5)
+            
+            if upcoming_seminars:
+                seminars_info = []
+                for seminar in upcoming_seminars:
+                    seminar_data = {
+                        "id": seminar.id,
+                        "title": seminar.title,
+                        "date": seminar.date.strftime("%B %d, %Y at %I:%M %p") if seminar.date else "TBD",
+                        "location_type": seminar.location_type,
+                        "available_seats": seminar.available_seats,
+                        "is_full": seminar.is_full
+                    }
+                    seminars_info.append(seminar_data)
+                
+                context["upcoming_seminars"] = seminars_info
+        except Exception as e:
+            print(f"Warning: Could not fetch seminars for context: {e}")
+            context["upcoming_seminars"] = []
+
         return context
 
     async def book_appointment(
