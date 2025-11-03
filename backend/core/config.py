@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     # AI Configuration
     MAX_CONVERSATION_HISTORY: int = 20
     AI_TEMPERATURE: float = 0.7
-    AI_MAX_TOKENS: int = 1000
+    AI_MAX_TOKENS: int = 300  # Reduced from 1000 to enforce shorter, punchier responses
 
     # Qualification Configuration
     QUALIFICATION_QUESTIONS_COUNT: int = 7
